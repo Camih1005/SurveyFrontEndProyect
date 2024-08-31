@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Kdam+Thmor+Pro&display=swap');
+*{
+    font-family: "Kdam Thmor Pro", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.principal{
+    height: 100dvh;
+    border: solid 2px black;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+   
+    
+}
+.hidden{
+    display: none;
+}
+.int1{
+    border: solid 2px black;
+    height: 95dvh;
+    padding: 5px;
+    border-radius: 10px;
+}
+.centro{
+    display: flex;
+    justify-content: center;
+  
+}
+span:first-of-type {
+    font-size: 1rem;
+    position: relative;
+    left: 150px;
+    top: 10px;
+    text-shadow: 2px 1px 10px ;
+}
+h1:first-of-type{
+    text-shadow: 2px 1px 10px ;
+}
+.sidebar-divider {
+    margin: 0 1rem 1rem;
+}
+.bg-blur {
+   /* Aplica un desenfoque al fondo */
+    background-color: rgb(136, 136, 136); /* Color de fondo */
+    transition: transform 0.3s ease-in-out; /* Transición suave para el escalado */
+}
+
+.bg-blur:hover {
+    transform: scale(1.1);
+    background-color: rgb(99, 98, 98); /* Escala el elemento al 120% cuando se pasa el cursor por encima */
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.ElegirCat{
+    border: solid 2px black;
+    height: 95dvh;
+    padding: 5px;
+    border-radius: 10px;
+    width: 100%;
+}
+@media (max-width: 767px) {
+    .principal {
+        flex-direction: column;
+    }
+    .int1 {
+        margin-bottom: 20px; 
+    }
+}
