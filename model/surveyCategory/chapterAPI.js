@@ -18,7 +18,7 @@ export async function createChapter() {
             },
             body: JSON.stringify({ 
                 chapterTitle: "ejemplocacas", 
-                chapterNumber: 3  // Asegúrate de que sea del tipo correcto (número si es necesario)
+                chapterNumber: 3 // Asegúrate de que sea del tipo correcto (número si es necesario)
             }),
         });
 

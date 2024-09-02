@@ -1,8 +1,11 @@
 import { initialize } from '../controller/categoryController.js';
 import { postSurvey } from '../model/surveyCategory/surveyAPI.js';
-import {createChapter} from "../model/surveyCategory/chapterAPI.js";
+import { createChapter } from "../model/surveyCategory/chapterAPI.js";
+
+document.addEventListener('DOMContentLoaded', () => {
 
 
+// Selecciona los elementos del DOM
 const surveyTypeSelect = document.getElementById('survey-type');
 const dynamicForm = document.getElementById('dynamic-form');
 const modalFormContainer = document.getElementById('modal-form-container');
@@ -11,11 +14,75 @@ const openModalButton = document.getElementById('open-modal');
 const submitButton = document.getElementById('submit-answers');
 const btAggSesion = document.getElementById('btAggSesion');
 
-let surveyData = {
-    type: '',
-    questions: [], // Array to store multiple questions
-    responses: [] // Array to store user responses
-};
+// Asegúrate de que los elementos existen antes de usarlos
+if (surveyTypeSelect && saveButton) {
+    saveButton.addEventListener('click', () => {
+        const type = surveyTypeSelect.value;
+
+        if (!type) {
+            alert('Por favor, selecciona un tipo de encuesta.');
+            return;
+        }
+
+        // Variables para verificar si la encuesta está completa
+        let isValid = true;
+
+        if (type === 'multiple-choice') {
+            const questions = [];
+            document.querySelectorAll('.dynamic-question').forEach((questionDiv, index) => {
+                const questionText = questionDiv.querySelector(`#question${index + 1}`)?.value.trim();
+                if (!questionText) {
+                    alert(`Por favor, ingresa una pregunta para la pregunta ${index + 1}.`);
+                    isValid = false;
+                    return;
+                }
+
+                const options = [];
+                questionDiv.querySelectorAll(`#options-container${index + 1} input`).forEach(input => {
+                    const value = input.value.trim();
+                    if (value) options.push(value);
+                });
+                if (options.length === 0) {
+                    alert(`Por favor, añade al menos una opción para la pregunta ${index + 1}.`);
+                    isValid = false;
+                    return;
+                }
+
+                questions.push({ question: questionText, options: options });
+            });
+
+            if (questions.length === 0) {
+                alert('Por favor, añade al menos una pregunta.');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+            surveyData = { type: type, questions: questions, responses: [] };
+
+        } else if (type === 'short-answer') {
+            const question = document.getElementById('question')?.value.trim();
+            if (!question) {
+                alert('Por favor, ingresa una pregunta.');
+                return;
+            }
+            surveyData = { type: type, questions: [{ question: question }], responses: [] };
+
+        } else if (type === 'rating') {
+            const scale = document.getElementById('scale')?.value.trim();
+            if (!scale) {
+                alert('Por favor, ingresa una escala.');
+                return;
+            }
+            surveyData = { type: type, questions: [{ scale: scale }], responses: [] };
+        }
+
+        console.log('Formulario guardado:', surveyData);
+        alert('Formulario guardado.');
+    });
+} else {
+    console.error('Elementos del formulario no encontrados.');
+}
+
 
 // Event listener to handle survey type selection
 function setupSurveyTypeEvents() {
@@ -80,11 +147,9 @@ function setupSurveyTypeEvents() {
     });
 }
 
-// Function to add content dynamically
 function addContent() {
-    // Create a new div for the new session form
     const newDiv = document.createElement('div');
-    newDiv.className = 'session-form'; // Add a class for specific styling
+    newDiv.className = 'session-form';
     newDiv.innerHTML = `
         <hr class="hrDiv">
         <div class="centrado">
@@ -105,32 +170,19 @@ function addContent() {
             <div class="dynamic-form-container"></div>
         </div>
     `;
-    
-    // Append the new div to the dynamic form container
+
     dynamicForm.appendChild(newDiv);
-    setupSurveyTypeEvents(); // Set up events for the new select elements
+    setupSurveyTypeEvents();
 }
+
 
 // Add click event to the button
 btAggSesion.addEventListener('click', addContent);
 
 // Existing event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    const createSurveyBtn = document.getElementById('create-survey-btn');
-    const createCategoryBtn = document.getElementById('create-category-btn');
-    const categorySection = document.getElementById('category-section');
-    const surveySection = document.getElementById('survey-section');
 
-    createSurveyBtn.addEventListener('click', function() {
-        categorySection.classList.add('d-none');
-        surveySection.classList.remove('d-none'); 
-    });
 
-    createCategoryBtn.addEventListener('click', function() {
-        surveySection.classList.add('d-none'); 
-        categorySection.classList.remove('d-none'); 
-    });
-});
+
 
 /*chapter controller */
 
@@ -148,7 +200,7 @@ document.getElementById('save-form').addEventListener('click', async () => {
     try {
         const result = await postSurvey(surveyData);
         console.log('Encuesta enviada con éxito:', result);
-     
+
 
     } catch (error) {
         console.error('Error al enviar la encuesta:', error);
@@ -160,9 +212,10 @@ initialize();
 const detailsContainer = document.getElementById('listCat');
 const context = document.querySelector(".catText");
 
-detailsContainer.addEventListener('click', function(event) {
+detailsContainer.addEventListener('click', function (event) {
     if (event.target.tagName === 'A') {
         const selectedText = event.target.textContent;
         context.innerHTML = `<h1 class="animate__animated animate__fadeIn">${selectedText}</h1>`;
     }
+});
 });
