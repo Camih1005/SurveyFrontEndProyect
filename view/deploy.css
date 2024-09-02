@@ -66,6 +66,43 @@ select {
     border-radius: 10px;
     width: 100%;
 }
+/* Estilizar el contenedor de scroll */
+#survey-section {
+    overflow-y: auto; /* Agrega barra de desplazamiento vertical cuando sea necesario */
+    max-height: 100vh; /* Define una altura máxima para el contenedor */
+}
+
+/* Personalizar la barra de desplazamiento */
+#survey-section::-webkit-scrollbar {
+    width: 12px; /* Ancho de la barra de desplazamiento */
+}
+
+/* Personalizar el "thumb" (parte que se mueve) de la barra de desplazamiento */
+#survey-section::-webkit-scrollbar-thumb {
+    background-color: #88888842; /* Color del thumb */
+    border-radius: 6px; /* Bordes redondeados del thumb */
+}
+
+/* Personalizar el área de la pista de la barra de desplazamiento */
+#survey-section::-webkit-scrollbar-track {
+    background-color: #c5c5c562; /* Color del área de la pista */
+    border-radius: 6px; /* Bordes redondeados del track */
+}
+
+.hrDiv {
+    height: 5px; /* Cambia el grosor */
+    background-color: rgb(75, 11, 11); /* Cambia el color de la línea */
+    border: none; /* Elimina el borde para usar solo el color de fondo */
+}
+
+/* ++++++++++++++++++++++++*/
+
+/* From Uiverse.io by kennyotsu-monochromia */ 
+
+
+  
+
+
 @media (max-width: 767px) {
     .principal {
         flex-direction: column;

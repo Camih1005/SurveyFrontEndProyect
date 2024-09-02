@@ -1,222 +1,168 @@
+import { initialize } from '../controller/categoryController.js';
+import { postSurvey } from '../model/surveyCategory/surveyAPI.js';
+import {createChapter} from "../model/surveyCategory/chapterAPI.js";
+
+
 const surveyTypeSelect = document.getElementById('survey-type');
-    const dynamicForm = document.getElementById('dynamic-form');
-    const modalFormContainer = document.getElementById('modal-form-container');
-    const saveButton = document.getElementById('save-form');
-    const openModalButton = document.getElementById('open-modal');
-    const submitButton = document.getElementById('submit-answers');
+const dynamicForm = document.getElementById('dynamic-form');
+const modalFormContainer = document.getElementById('modal-form-container');
+const saveButton = document.getElementById('save-form');
+const openModalButton = document.getElementById('open-modal');
+const submitButton = document.getElementById('submit-answers');
+const btAggSesion = document.getElementById('btAggSesion');
 
-    let surveyData = {
-        type: '',
-        question: '',
-        options: [],
-        scale: '',
-        responses: [] // Array to store user responses
-    };
+let surveyData = {
+    type: '',
+    questions: [], // Array to store multiple questions
+    responses: [] // Array to store user responses
+};
 
-    // Event listener to handle survey type selection
-    surveyTypeSelect.addEventListener('change', (event) => {
-        const type = event.target.value;
-        dynamicForm.innerHTML = ''; // Clear previous fields
-        surveyData = { type: type, question: '', options: [], scale: '', responses: [] };
+// Event listener to handle survey type selection
+function setupSurveyTypeEvents() {
+    // Attach event listeners to all select elements with class 'survey-type'
+    document.querySelectorAll('.survey-type').forEach(select => {
+        select.addEventListener('change', (event) => {
+            const type = event.target.value;
+            const sessionForm = event.target.closest('.session-form');
+            const dynamicFormContainer = sessionForm.querySelector('.dynamic-form-container');
+            dynamicFormContainer.innerHTML = ''; // Clear previous fields
 
-        if (type === 'multiple-choice') {
-            dynamicForm.innerHTML = `
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="question" placeholder="Pregunta" required>
-                    <label for="question">Pregunta:</label>
-                </div>
-                <div id="options-container"></div>
-                <button type="button" class="btn btn-secondary mb-3" id="add-option">Añadir opción</button>
-            `;
-            document.getElementById('add-option').addEventListener('click', () => {
-                const optionsContainer = document.getElementById('options-container');
-                const optionIndex = optionsContainer.children.length + 1;
-                const newOption = document.createElement('div');
-                newOption.className = 'dynamic-option';
-                newOption.innerHTML = `
-                    <div class="form-floating mb-2">
-                        <input type="text" class="form-control" id="option${optionIndex}" placeholder="Opción ${optionIndex}" required>
-                        <label for="option${optionIndex}">Opción ${optionIndex}:</label>
+            if (type === 'multiple-choice') {
+                dynamicFormContainer.innerHTML = `
+                    <div id="questions-container"></div>
+                    <button type="button" class="btn btn-secondary mb-3 add-question">Añadir pregunta</button>
+                `;
+                dynamicFormContainer.querySelector('.add-question').addEventListener('click', () => {
+                    const questionsContainer = dynamicFormContainer.querySelector('#questions-container');
+                    const questionIndex = questionsContainer.children.length + 1;
+                    const newQuestion = document.createElement('div');
+                    newQuestion.className = 'dynamic-question';
+                    newQuestion.innerHTML = `
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="question${questionIndex}" placeholder="Pregunta ${questionIndex}" required>
+                            <label for="question${questionIndex}">Pregunta ${questionIndex}:</label>
+                        </div>
+                        <div id="options-container${questionIndex}"></div>
+                        <button type="button" class="btn btn-secondary mb-3 add-option" id="add-option${questionIndex}">Añadir opción</button>
+                    `;
+                    questionsContainer.appendChild(newQuestion);
+
+                    document.getElementById(`add-option${questionIndex}`).addEventListener('click', () => {
+                        const optionsContainer = document.getElementById(`options-container${questionIndex}`);
+                        const optionIndex = optionsContainer.children.length + 1;
+                        const newOption = document.createElement('div');
+                        newOption.className = 'dynamic-option';
+                        newOption.innerHTML = `
+                            <div class="form-floating mb-2">
+                                <input type="text" class="form-control" id="option${questionIndex}_${optionIndex}" placeholder="Opción ${optionIndex}" required>
+                                <label for="option${questionIndex}_${optionIndex}">Opción ${optionIndex}:</label>
+                            </div>
+                        `;
+                        optionsContainer.appendChild(newOption);
+                    });
+                });
+            } else if (type === 'short-answer') {
+                dynamicFormContainer.innerHTML = `
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="question" placeholder="Pregunta" required>
+                        <label for="question">Pregunta:</label>
                     </div>
                 `;
-                optionsContainer.appendChild(newOption);
-            });
-        } else if (type === 'short-answer') {
-            dynamicForm.innerHTML = `
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="question" placeholder="Pregunta" required>
-                    <label for="question">Pregunta:</label>
-                </div>
-            `;
-        } else if (type === 'rating') {
-            dynamicForm.innerHTML = `
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="scale" placeholder="Escala" required>
-                    <label for="scale">Escala de Calificación (ej. 1-5):</label>
-                </div>
-            `;
-        }
-    });
-
-    // Event listener to save the survey form
-    saveButton.addEventListener('click', () => {
-        const type = surveyTypeSelect.value;
-        const question = document.getElementById('question') ? document.getElementById('question').value.trim() : '';
-        if (question === '') {
-            alert('Por favor, ingresa una pregunta.');
-            return;
-        }
-
-        surveyData.question = question;
-
-        if (type === 'multiple-choice') {
-            const options = [];
-            document.querySelectorAll('#options-container input').forEach(input => {
-                const value = input.value.trim();
-                if (value) options.push(value);
-            });
-            if (options.length === 0) {
-                alert('Por favor, añade al menos una opción.');
-                return;
-            }
-            surveyData.options = options;
-        } else if (type === 'short-answer') {
-            // No additional fields to validate
-        } else if (type === 'rating') {
-            const scale = document.getElementById('scale') ? document.getElementById('scale').value.trim() : '';
-            if (scale === '') {
-                alert('Por favor, ingresa una escala.');
-                return;
-            }
-            surveyData.scale = scale;
-        }
-
-        console.log('Formulario guardado:', surveyData);
-        alert('Formulario guardado.');
-    });
-
-    // Event listener to open the modal with the saved survey
-    openModalButton.addEventListener('click', () => {
-        modalFormContainer.innerHTML = ''; // Clear previous form
-        if (surveyData.type === 'multiple-choice') {
-            modalFormContainer.innerHTML = `
-                <div class="mb-3">
-                    <label for="modal-question" class="form-label">Pregunta:</label>
-                    <input type="text" class="form-control" id="modal-question" value="${surveyData.question}" readonly>
-                </div>
-                <div id="modal-options-container"></div>
-            `;
-            surveyData.options.forEach((option, index) => {
-                const newOption = document.createElement('div');
-                newOption.className = 'modal-option';
-                newOption.innerHTML = `
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="modal-options" id="modal-option${index}" value="${option}">
-                        <label class="form-check-label" for="modal-option${index}">
-                            ${option}
-                        </label>
+            } else if (type === 'rating') {
+                dynamicFormContainer.innerHTML = `
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="scale" placeholder="Escala" required>
+                        <label for="scale">Escala de Calificación (ej. 1-5):</label>
                     </div>
                 `;
-                document.getElementById('modal-options-container').appendChild(newOption);
-            });
-        } else if (surveyData.type === 'short-answer') {
-            modalFormContainer.innerHTML = `
-                <div class="mb-3">
-                    <label for="modal-question" class="form-label">Pregunta:</label>
-                    <input type="text" class="form-control" id="modal-question" value="${surveyData.question}" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="modal-short-answer" class="form-label">Respuesta:</label>
-                    <input type="text" class="form-control" id="modal-short-answer" placeholder="Respuesta">
-                </div>
-            `;
-        } else if (surveyData.type === 'rating') {
-            modalFormContainer.innerHTML = `
-                <div class="mb-3">
-                    <label for="modal-question" class="form-label">Pregunta:</label>
-                    <input type="text" class="form-control" id="modal-question" value="${surveyData.question}" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="modal-rating" class="form-label">Calificación:</label>
-                    <input type="number" class="form-control" id="modal-rating" min="1" max="${surveyData.scale}" placeholder="Calificación (1-${surveyData.scale})">
-                </div>
-            `;
-        }
+            }
+        });
     });
+}
 
-    // Event listener to submit responses
-    submitButton.addEventListener('click', () => {
-        const type = surveyData.type;
-        const responses = [];
+// Function to add content dynamically
+function addContent() {
+    // Create a new div for the new session form
+    const newDiv = document.createElement('div');
+    newDiv.className = 'session-form'; // Add a class for specific styling
+    newDiv.innerHTML = `
+        <hr class="hrDiv">
+        <div class="centrado">
+            <div>
+                <label for="chaptersesion" style="font-weight: bold;" class="form-label">Nombre de la sesión</label>
+                <input class="form-control" list="datalistOptions" id="chaptersesion" placeholder="Ingresar el nombre">
+            </div>
+            <hr>
+            <div class="form-floating mb-3">
+                <select class="form-select survey-type" aria-label="Selecciona el tipo de encuesta">
+                    <option selected>Selecciona el tipo de encuesta</option>
+                    <option value="multiple-choice">Selección Múltiple</option>
+                    <option value="short-answer">Respuesta Corta</option>
+                    <option value="rating">Calificación</option>
+                </select>
+                <label for="survey-type">Selecciona el tipo de encuesta:</label>
+            </div>
+            <div class="dynamic-form-container"></div>
+        </div>
+    `;
+    
+    // Append the new div to the dynamic form container
+    dynamicForm.appendChild(newDiv);
+    setupSurveyTypeEvents(); // Set up events for the new select elements
+}
 
-        if (type === 'multiple-choice') {
-            const selectedOption = document.querySelector('input[name="modal-options"]:checked');
-            if (!selectedOption) {
-                alert('Por favor, selecciona una opción.');
-                return;
-            }
-            responses.push(selectedOption.value);
-        } else if (type === 'short-answer') {
-            const answer = document.getElementById('modal-short-answer').value.trim();
-            if (answer === '') {
-                alert('Por favor, ingresa una respuesta.');
-                return;
-            }
-            responses.push(answer);
-        } else if (type === 'rating') {
-            const rating = document.getElementById('modal-rating').value;
-            if (rating === '' || rating < 1 || rating > surveyData.scale) {
-                alert(`Por favor, ingresa una calificación válida entre 1 y ${surveyData.scale}.`);
-                return;
-            }
-            responses.push(rating);
-        }
+// Add click event to the button
+btAggSesion.addEventListener('click', addContent);
 
-        surveyData.responses = responses;
-        console.log('Respuestas enviadas:', surveyData);
-
-        // Aquí puedes enviar las respuestas al servidor
-        // fetch('URL_DEL_SERVIDOR', { method: 'POST', body: JSON.stringify(surveyData) });
-
-        alert('Respuestas enviadas.');
-    });
-    import { initialize } from '../controller/categoryController.js';
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // Inicializar categorías
-        initialize();
-});
-    // index.js
-
-    /* CAMBIO DE PESTAÑA */
+// Existing event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const createSurveyBtn = document.getElementById('create-survey-btn');
     const createCategoryBtn = document.getElementById('create-category-btn');
-    const createCategoryForm = document.getElementById('form12');
+    const categorySection = document.getElementById('category-section');
     const surveySection = document.getElementById('survey-section');
 
-    const createSurveyBtn = document.getElementById('create-survey-btn');
-    const viewStatsBtn = document.getElementById('view-stats-btn');
-
-    // Función para mostrar el formulario de creación de categoría y ocultar otros
-    function showCreateCategoryForm() {
-        createCategoryForm.classList.remove('hidden');
-        surveySection.classList.add('hidden');
-    }
-
-    // Función para mostrar la sección de encuestas y ocultar otros
-    function showSurveySection() {
-        createCategoryForm.classList.add('hidden');
-        surveySection.classList.remove('hidden');
-    }
-
-    // Eventos para mostrar y ocultar secciones
-    createCategoryBtn.addEventListener('click', showCreateCategoryForm);
-    createSurveyBtn.addEventListener('click', showSurveySection);
-    viewStatsBtn.addEventListener('click', () => {
-        // Agrega lógica para la vista de estadísticas aquí si es necesario
-        alert('Vista de estadísticas no implementada.');
+    createSurveyBtn.addEventListener('click', function() {
+        categorySection.classList.add('d-none');
+        surveySection.classList.remove('d-none'); 
     });
 
-    // Inicializa mostrando la sección de encuestas por defecto
-    showSurveySection();
+    createCategoryBtn.addEventListener('click', function() {
+        surveySection.classList.add('d-none'); 
+        categorySection.classList.remove('d-none'); 
+    });
+});
 
-    
+/*chapter controller */
+
+
+
+/**survey controller */
+function enviarSurvey() {
+    const name = document.getElementById('surveyName').value;
+    const description = document.getElementById('surveyDesc').value;
+    return { name: name, description: description };
+}
+
+document.getElementById('save-form').addEventListener('click', async () => {
+    const surveyData = enviarSurvey();
+    try {
+        const result = await postSurvey(surveyData);
+        console.log('Encuesta enviada con éxito:', result);
+     
+
+    } catch (error) {
+        console.error('Error al enviar la encuesta:', error);
+    }
+});
+
+// Initialize categories
+initialize();
+const detailsContainer = document.getElementById('listCat');
+const context = document.querySelector(".catText");
+
+detailsContainer.addEventListener('click', function(event) {
+    if (event.target.tagName === 'A') {
+        const selectedText = event.target.textContent;
+        context.innerHTML = `<h1 class="animate__animated animate__fadeIn">${selectedText}</h1>`;
+    }
+});

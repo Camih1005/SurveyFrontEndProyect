@@ -1,6 +1,4 @@
-// view/categoryView.js
 
-// Actualiza la lista de categorías en la interfaz de usuario
 export function renderCategories(categories) {
     const detailsContainer = document.getElementById('listCat');
     detailsContainer.innerHTML = '';
@@ -17,7 +15,7 @@ export function renderCategories(categories) {
     }
 }
 
-// Obtén el valor del input del formulario
+
 export function getFormData() {
     const ej = document.getElementById('categoryName').value;
     return { name: ej };
