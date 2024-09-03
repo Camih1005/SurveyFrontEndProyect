@@ -19,6 +19,8 @@ export async function getCategories() {
     return response.json();
 }
 
+
+
 // Función para crear una nueva categoría
 export async function createCategory(newCategory) {
     const createCategoryUrl = 'https://radiant-growth-production.up.railway.app/api/SurveyCategory';
@@ -30,11 +32,14 @@ export async function createCategory(newCategory) {
         },
         body: JSON.stringify(newCategory)
     });
-
+    
     if (!response.ok) {
-        const text = await response.text();
+        const idCat = await response.text();
         throw new Error(`Network response was not ok: ${response.statusText} - ${text}`);
+    
+        
     }
-
-    return response.json();
+    const s = await response.json();
+  
+    return s.id;
 }

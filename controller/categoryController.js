@@ -21,11 +21,13 @@ export async function initialize() {
         try {
             await createCategory(newCategory);
             console.log('Category created:', newCategory);
+            alert("categoria creada");
 
             // Actualiza la lista de categorías después de crear una nueva categoría
             const categories = await getCategories();
             renderCategories(categories);
         } catch (error) {
+            // alert("No se pudo crear la categoria");
             console.error('Error creating category:', error);
         }
     });

@@ -37,29 +37,60 @@
                 </button>
             </div>
             <hr>
-            <div class="centro">
-                <button id="create-category-btn" class="btn bg-blur" type="button" data-bs-toggle="collapse"
-                    data-bs-target=".multi-collapse1" aria-expanded="false" aria-controls="multiCollapseExample5">
-                    <img src="./recursos/analisis-de-datos.png" width="40px" alt=""> Crear categoría
-                </button>
+          <!-- Botón para Crear Categoría -->
+<div class="centro">
+    <button id="create-category-btn" class="btn bg-blur" type="button" data-bs-toggle="collapse"
+        data-bs-target="#multiCollapseExample5" aria-expanded="false" aria-controls="multiCollapseExample5">
+        <img src="./recursos/analisis-de-datos.png" width="40px" alt=""> Crear categoría
+    </button>
+</div>
+
+<div class="collapse" id="multiCollapseExample5">
+    <form id="form12">
+        <div class="card card-body mt-3">
+            <div class="d-grid gap-2">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="categoryName"
+                        placeholder="Nombre de la categoría" aria-label="Nombre de la categoría">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-outline-secondary" type="button">Crear</button>
+                    </div>
+                </div>
             </div>
+        </div>
+    </form>
+</div>
+
+<hr>
+
+<!-- Botón para Eliminar Categoría -->
+<div class="centro">
+    <button id="eliminar-category-btn" class="btn bg-blur" type="button" data-bs-toggle="collapse"
+        data-bs-target="#multiCollapseExample6" aria-expanded="false" aria-controls="multiCollapseExample6">
+        <img src="./recursos/analisis-de-datos.png" width="40px" alt=""> Eliminar categoría
+    </button>
+</div>
+
+<div class="collapse" id="multiCollapseExample6">
+    <form id="form13">
+        <div class="card card-body mt-3">
+            <div class="d-grid gap-2">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="categorynameDelete"
+                        placeholder="Nombre de la categoría a eliminar" aria-label="Nombre de la categoría">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-outline-secondary" type="button">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
 
             <!-- Contenido colapsable -->
-            <div class="collapse multi-collapse1" id="multiCollapseExample5">
-                <form id="form12">
-                    <div class="card card-body mt-3">
-                        <div class="d-grid gap-2">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" id="categoryName"
-                                    placeholder="Nombre de la categoría" aria-label="Nombre de la categoría">
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-outline-secondary" type="button">Crear</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            
             <hr>
         </div>
 
@@ -109,7 +140,7 @@
             </form>
         </div>
 
-        <!-- Formulario para crear categoría -->
+        <!-- Formulario para crear categoría
         <div id="category-section" class="ElegirCat col-sm-12 col-md-6 col-xl-8 d-none">
             <form id="form12" class="form-container">
                 <h1 class="display-5 centro">Crear Categoría</h1>
@@ -124,7 +155,7 @@
                 </div>
             </form>
         </div>
-    </section>
+    </section> -->
 
     <!-- Modal de Confirmación -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">

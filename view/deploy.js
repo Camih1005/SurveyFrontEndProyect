@@ -1,7 +1,8 @@
 import { initialize } from '../controller/categoryController.js';
 import { postSurvey } from '../model/surveyCategory/surveyAPI.js';
 import { createChapter } from "../model/surveyCategory/chapterAPI.js";
-document.addEventListener('DOMContentLoaded', () => {
+
+
     const surveyTypeSelect = document.getElementById('survey-type');
     const dynamicForm = document.getElementById('dynamic-form');
     const saveButton = document.getElementById('save-form');
@@ -9,11 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
     const confirmSaveButton = document.getElementById('confirmSave');
 
+    export let idca = {
+        "id":""
+    }
+
     let surveyData = null; // Asegúrate de que surveyData esté definido
 
     if (saveButton) {
         saveButton.addEventListener('click', () => {
             const type = surveyTypeSelect.value;
+            console.log(type)
 
             if (!type) {
                 alert('Por favor, selecciona un tipo de encuesta.');
@@ -239,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmationModal.show();
         });
     }
-});
+
 
 
 
@@ -277,7 +283,7 @@ document.getElementById('save-form').addEventListener('click', async () => {
             return;
         }
 
-        const surveyResult = await postSurvey(surveyData);
+        const surveyResult = await postSurvey(surveyData,idca);
         console.log('Encuesta enviada con éxito, ID:', surveyResult);
 
         // Añade el ID de la encuesta a chapterData
@@ -292,13 +298,40 @@ document.getElementById('save-form').addEventListener('click', async () => {
 
 // Initialize categories
 initialize();
+
+
+
 const detailsContainer = document.getElementById('listCat');
 const context = document.querySelector(".catText");
+const idcatS = document.querySelectorAll(".dropdown-item")
+
+
+
+// let selectedId = ""
+
+detailsContainer.addEventListener('click', function(event) {
+    // Verificar si el elemento clicado es un enlace (a)
+    if (event.target && event.target.tagName === 'A') {
+        const clickedId = event.target.id.replace('idcat-', '');
+        console.log('Clicked ID:', clickedId);
+        
+        // Aquí puedes hacer algo con el ID, como almacenarlo en una constante
+         
+          idca.id = clickedId
+        // Puedes usar `selectedId` según tus necesidades
+    }
+});
+
+
+
 
 detailsContainer.addEventListener('click', function (event) {
     if (event.target.tagName === 'A') {
         const selectedText = event.target.textContent;
-        context.innerHTML = `<h1 class="animate__animated animate__fadeIn">${selectedText}</h1>`;
+        context.innerHTML = `<h1  class="animate__animated animate__fadeIn">${selectedText}</h1>`;
+
+      
+
     }
 });
 
@@ -319,7 +352,7 @@ function saveFormToArray() {
     const formHTML = getFormHTML();
     if (formHTML) {
         formArray.push(formHTML);
-        /*console.log('Formulario guardado en el array:', formHTML);*/
+        // console.log('Formulario guardado en el array:', formHTML);
     }
 }
 

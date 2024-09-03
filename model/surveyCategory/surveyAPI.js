@@ -1,4 +1,5 @@
-  
+import { idca } from '../../view/deploy.js';
+
  export async function getSurveys() {
     const getCategoriesUrl = 'https://radiant-growth-production.up.railway.app/api/survey';
     
@@ -25,8 +26,9 @@
 
 // Función para crear una nueva categoría
 
-export async function postSurvey(surveys) {
-    const createSurveyUrl = 'https://radiant-growth-production.up.railway.app/api/survey';
+
+export async function postSurvey(surveys,idca) {
+    const createSurveyUrl = `https://radiant-growth-production.up.railway.app/api/survey/category/${idca.id}`;
     
     try {
         const response = await fetch(createSurveyUrl, {
