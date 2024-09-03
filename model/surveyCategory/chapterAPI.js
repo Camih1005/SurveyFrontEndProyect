@@ -1,14 +1,11 @@
-import { postSurvey } from "../surveyCategory/surveyAPI.js";
-
-// Función para crear un capítulo
-export async function createChapter() {
+// Función para enviar datos del capítulo
+export async function createChapter(chapter) {
     try {
-        // Espera a que se cree la encuesta y obtén el ID
-        const idSurvey = await postSurvey();
-        console.log('ID de la encuesta:', idSurvey);
-
-        // Construye la URL con el ID de la encuesta
-        const URL = `https://radiant-growth-production.up.railway.app/api/chapter/${idSurvey}`;
+        // Cambia la URL para incluir el ID de la encuesta si es necesario
+        const URL = `https://radiant-growth-production.up.railway.app/api/chapter/${chapter.surveyId}`;
+        
+        // Muestra los datos enviados para depuración
+        console.log('Datos enviados al servidor para crear capítulo:', chapter);
         
         // Crea el capítulo
         const response = await fetch(URL, {
@@ -16,10 +13,7 @@ export async function createChapter() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
-                chapterTitle: "ejemplocacas", 
-                chapterNumber: 3 // Asegúrate de que sea del tipo correcto (número si es necesario)
-            }),
+            body: JSON.stringify(chapter)
         });
 
         if (!response.ok) {
@@ -30,11 +24,11 @@ export async function createChapter() {
 
         const result = await response.json();
         console.log('Capítulo creado con ID:', result.id);
-        console.log('Número del capítulo:', result.chapterNumber); // Muestra el número del capítulo
-        return { id: result.id, chapterNumber: result.chapterNumber };
+        console.log('Número del capítulo:', result.chapterNumber || 'Número no disponible'); // Muestra el número del capítulo
+        return { id: result.id, chapterNumber: result.chapter_Number,chapter_title:  result.chapter_title };
 
     } catch (error) {
         console.error('Error al crear capítulo:', error);
+        throw error;
     }
 }
-
