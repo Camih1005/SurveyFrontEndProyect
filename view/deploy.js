@@ -1,6 +1,7 @@
 import { initialize } from '../controller/categoryController.js';
-import { postSurvey } from '../model/surveyCategory/surveyAPI.js';
-import { createChapter } from "../model/surveyCategory/chapterAPI.js";
+import { postSurvey,getSurveysByCatId} from '../model/surveyCategory/surveyAPI.js';
+import { createChapter} from "../model/surveyCategory/chapterAPI.js";
+import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
 
 
     const surveyTypeSelect = document.getElementById('survey-type');
@@ -309,7 +310,7 @@ const idcatS = document.querySelectorAll(".dropdown-item")
 
 // let selectedId = ""
 
-detailsContainer.addEventListener('click', function(event) {
+detailsContainer.addEventListener('click', async function(event) {
     // Verificar si el elemento clicado es un enlace (a)
     if (event.target && event.target.tagName === 'A') {
         const clickedId = event.target.id.replace('idcat-', '');
@@ -317,9 +318,13 @@ detailsContainer.addEventListener('click', function(event) {
         
         // Aquí puedes hacer algo con el ID, como almacenarlo en una constante
          
-          idca.id = clickedId
+          idca.id = clickedId;
+          const BuscarSurveyByCatid = await getSurveysByCatId(idca.id);
+          ImprimirSurveys(BuscarSurveyByCatid);
         // Puedes usar `selectedId` según tus necesidades
     }
+
+
 });
 
 
@@ -329,10 +334,10 @@ detailsContainer.addEventListener('click', function (event) {
     if (event.target.tagName === 'A') {
         const selectedText = event.target.textContent;
         context.innerHTML = `<h1  class="animate__animated animate__fadeIn">${selectedText}</h1>`;
-
-      
-
     }
+
+
+
 });
 
 // Array para almacenar el HTML del cuestionario

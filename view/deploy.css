@@ -100,8 +100,41 @@ select {
 /* From Uiverse.io by kennyotsu-monochromia */ 
 
 
-  
+.ShowSurveys{
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px;
+}
 
+.surveyContainer{
+    position: relative;
+    padding: 20px;
+    border: 2px solid black;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.surveycontainerimg{
+    width: 200px;
+}
+
+.eliminarSurvey{
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    right: 20px;
+    background-color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ddd;
+}
 
 @media (max-width: 767px) {
     .principal {

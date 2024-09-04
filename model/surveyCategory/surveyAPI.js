@@ -1,9 +1,8 @@
-import { idca } from '../../view/deploy.js';
 
- export async function getSurveys() {
-    const getCategoriesUrl = 'https://radiant-growth-production.up.railway.app/api/survey';
+ export async function getSurveysByCatId(idcat) {
+    const url = `https://radiant-growth-production.up.railway.app/api/surveys/${idcat}`;
     
-    const response = await fetch(getCategoriesUrl, {
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -17,6 +16,8 @@ import { idca } from '../../view/deploy.js';
 
     return response.json();
 }
+
+
 
 
 // const surveys = 
@@ -60,6 +61,29 @@ export async function postSurvey(surveys,idca) {
         console.error('Error al crear encuesta:', error);
         throw error;
     }
+}
+
+export async function DeleteSurvey(idSurvey) {
+    const url = `https://radiant-growth-production.up.railway.app/api/survey/${idSurvey}`;
+    
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            // Lee la respuesta de error si existe
+            const text = await response.text();
+            console.error(`Error: ${response.status} - ${text}`);
+            throw new Error(`Network response was not ok: ${response.statusText} - ${text}`);
+        }
+
+        // Procesa la respuesta JSON
+        const data = await response.json();
+        console.log(data);
+        return data; 
 }
 
 
