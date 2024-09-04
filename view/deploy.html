@@ -17,19 +17,10 @@
                 <span>2</span>
                 <h1 class="display-4 centro">ENCUESTAS</h1>
             </div>
-            <hr class="sidebar-divider">
-            <div class="centro">
-                <button id="create-survey-btn" class="btn bg-blur" type="button" data-bs-toggle="collapse"
-                    data-bs-target=".multi-collapse" aria-expanded="false"
-                    aria-controls="multiCollapseExample1 multiCollapseExample2">
-                    <img src="./recursos/analisis-de-datos.png" width="40px" alt=""> Crear encuesta
-                </button>
-            </div>
+    
+           
 
-            <!-- Contenido colapsable -->
-            <div class="collapse multi-collapse" id="multiCollapseExample1">
-
-            </div>
+          
             <hr>
             <div class="centro">
                 <button id="view-stats-btn" class="btn bg-blur">
@@ -97,7 +88,7 @@
         <div id="survey-section" class="col-sm-12 col-md-6 col-xl-8">
             <!-- Formulario para crear encuesta -->
             <form id="survey-form" action="#" method="post">
-                <div class="int1">
+                <!-- <div class="int1">
                     <div class="tercero centro">
                         <div class="dropdown-center">
                             <button style="margin: 10px;" class="btn btn-secondary dropdown-toggle" type="button"
@@ -105,39 +96,62 @@
                                 CATEGORIA ENCUESTA
                             </button>
                             <ul id="listCat" class="dropdown-menu bg-grey">
-                                <!-- Aquí se cargarán dinámicamente las categorías -->
+                               
                             </ul>
                         </div>
-                    </div>
-                    <div class="centro catText h1s" style="margin: 10px;">
-                        <!-- Aquí se mostrará el nombre de la categoría seleccionada -->
-                    </div>
+                    </div> -->
+                    
+
+
+                    <div class="form-floating">
+  <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+    <option selected>Selecciona una categoria</option>
+
+  </select>
+  <label for="floatingSelect">CATEGORIAS</label>
+</div>
+
+<div class="centro catText h1s" style="margin: 10px;">
+    <!-- Aquí se mostrará el nombre de la categoría seleccionada -->
+</div>
 
                     <div class="ShowSurveys">MostrarEncuestas</div> <br>
 
-                    <div>
-                        <label for="surveyName" class="form-label">Nombre de la encuesta</label>
-                        <input class="form-control" list="datalistOptions" id="surveyName"
-                            placeholder="Ingresar nombre">
+                    <div class="">
+                        <button id="create-survey-btn" class="btn bg-blur" type="button" data-bs-toggle="collapse"
+                            data-bs-target=".multi-collapse" aria-expanded="false"
+                            aria-controls="multiCollapseExample1 multiCollapseExample2">
+                           Agregar encuesta
+                        </button>
                     </div>
-                    <hr>
-                    <div>
-                        <label for="surveyDesc" class="form-label">Descripción de la encuesta</label>
-                        <input class="form-control" list="datalistOptions" id="surveyDesc"
-                            placeholder="Ingresar la descripción">
-                    </div>
+                    <div id="AggSurvey" class="AggSurvey sesion d-none">
+                        <div>
+                            <label for="surveyName" class="form-label">Nombre de la encuesta</label>
+                            <input class="form-control" list="datalistOptions" id="surveyName"
+                                placeholder="Ingresar nombre">
+                        </div>
+                        <hr>
+                        <div>
+                            <label for="surveyDesc" class="form-label">Descripción de la encuesta</label>
+                            <input class="form-control" list="datalistOptions" id="surveyDesc"
+                                placeholder="Ingresar la descripción">
+                        </div>
+    
+                        <hr class="hrDiv">
+                        <!-- Formulario dinámico se insertará aquí -->
+                        <div class="dynamic-form-container"></div>
+                        <div id="dynamic-form"></div>
+                        <a id="btAggSesion" class="btn-primary">Agregar sesión</a>
+                        <div class="chapterSelect">
+                            <button id="save-form" class="btn btn-secondary mt-3" type="button">Guardar
+                                Formulario</button>
+                            <button id="open-modal" class="btn btn-primary mt-3" type="button" data-bs-toggle="modal"
+                                data-bs-target="#responseModal">Responder Encuesta</button>
+                        </div>
 
-                    <hr class="hrDiv">
-                    <!-- Formulario dinámico se insertará aquí -->
-                    <div class="dynamic-form-container"></div>
-                    <div id="dynamic-form"></div>
-                    <a id="btAggSesion" class="btn-primary">Agregar sesión</a>
-                    <div class="chapterSelect">
-                        <button id="save-form" class="btn btn-secondary mt-3" type="button">Guardar
-                            Formulario</button>
-                        <button id="open-modal" class="btn btn-primary mt-3" type="button" data-bs-toggle="modal"
-                            data-bs-target="#responseModal">Responder Encuesta</button>
+
                     </div>
+                  
                 </div>
             </form>
         </div>

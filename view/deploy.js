@@ -15,7 +15,7 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
         "id":""
     }
 
-    let surveyData = null; // Asegúrate de que surveyData esté definido
+    let surveyData = null; 
 
     if (saveButton) {
         saveButton.addEventListener('click', () => {
@@ -268,6 +268,64 @@ function enviarSurvey() {
     return { name: name, description: description };
 }
 
+// document.getElementById('save-form').addEventListener('click', async () => {
+//     const surveyData = enviarSurvey();
+//     const chapterData = enviarChapter();
+
+//     try {
+//         // Verifica que los campos no estén vacíos
+//         if (chapterData.chapter_title.trim() === "") {
+//             alert("Tienes que insertar el capítulo");
+//             return;
+//         }
+
+//         if (surveyData.name.trim() === "" || surveyData.description.trim() === "") {
+//             alert("Tienes que completar todos los campos de la encuesta");
+//             return;
+//         }
+
+//         const surveyResult = await postSurvey(surveyData,idca);
+//         console.log('Encuesta enviada con éxito, ID:', surveyResult);
+
+//         // Añade el ID de la encuesta a chapterData
+//         chapterData.surveyId = surveyResult;
+
+//         const chapterResult = await createChapter(chapterData);
+//         console.log('Capítulo creado:', chapterResult);
+//     } catch (error) {
+//         console.error('Error al enviar la encuesta o capítulo:', error);
+//     }
+// });
+
+// Initialize categories
+initialize();
+
+// Selección de elementos del DOM
+const selectElement = document.getElementById('floatingSelect');
+const context = document.querySelector(".catText");
+
+// Manejo de cambio en el select
+selectElement.addEventListener('change', async function(event) {
+    const selectedOption = event.target.options[event.target.selectedIndex];
+    if (selectedOption) {
+        // Obtener el ID desde el atributo data-id
+        const categoryId = selectedOption.getAttribute('data-id');
+        console.log('Selected Category ID:', categoryId);
+        
+        // Actualizar idca con el nuevo ID
+        idca.id = categoryId ? categoryId.replace('idcat-', '') : '';
+
+        // Buscar encuestas por ID y mostrar
+        const BuscarSurveyByCatid = await getSurveysByCatId(idca.id);
+        ImprimirSurveys(BuscarSurveyByCatid);
+        
+        // Actualizar el contexto con el texto seleccionado
+        const selectedText = selectedOption.textContent;
+        context.innerHTML = `<h1 class="animate__animated animate__fadeIn">${selectedText}</h1>`;
+    }
+});
+
+
 document.getElementById('save-form').addEventListener('click', async () => {
     const surveyData = enviarSurvey();
     const chapterData = enviarChapter();
@@ -284,7 +342,10 @@ document.getElementById('save-form').addEventListener('click', async () => {
             return;
         }
 
-        const surveyResult = await postSurvey(surveyData,idca);
+        // Asegúrate de que idca esté actualizado antes de llamar a postSurvey
+        console.log('ID de categoría para la encuesta:', idca.id);
+
+        const surveyResult = await postSurvey(surveyData, idca);
         console.log('Encuesta enviada con éxito, ID:', surveyResult);
 
         // Añade el ID de la encuesta a chapterData
@@ -297,48 +358,33 @@ document.getElementById('save-form').addEventListener('click', async () => {
     }
 });
 
-// Initialize categories
-initialize();
 
+// Función para cargar categorías en el select
+export function loadCategories(categories) {
+    selectElement.innerHTML = '';  // Limpia el contenido del select
+    
+    // Agrega una opción por defecto
+    const defaultOption = document.createElement('option');
+    defaultOption.textContent = 'Selecciona una categoría';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    selectElement.appendChild(defaultOption);
 
-
-const detailsContainer = document.getElementById('listCat');
-const context = document.querySelector(".catText");
-const idcatS = document.querySelectorAll(".dropdown-item")
-
-
-
-// let selectedId = ""
-
-detailsContainer.addEventListener('click', async function(event) {
-    // Verificar si el elemento clicado es un enlace (a)
-    if (event.target && event.target.tagName === 'A') {
-        const clickedId = event.target.id.replace('idcat-', '');
-        console.log('Clicked ID:', clickedId);
-        
-        // Aquí puedes hacer algo con el ID, como almacenarlo en una constante
-         
-          idca.id = clickedId;
-          const BuscarSurveyByCatid = await getSurveysByCatId(idca.id);
-          ImprimirSurveys(BuscarSurveyByCatid);
-        // Puedes usar `selectedId` según tus necesidades
+    if (Array.isArray(categories)) {
+        // Agrega las opciones de categorías
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.value;  // Valor de la opción
+            option.setAttribute('data-id', `idcat-${category.id}`); // Asignar el id como data-id
+            option.textContent = category.name;  // Texto visible de la opción
+            selectElement.appendChild(option);
+        });
+    } else {
+        console.error('Expected an array of categories');
     }
+}
 
 
-});
-
-
-
-
-detailsContainer.addEventListener('click', function (event) {
-    if (event.target.tagName === 'A') {
-        const selectedText = event.target.textContent;
-        context.innerHTML = `<h1  class="animate__animated animate__fadeIn">${selectedText}</h1>`;
-    }
-
-
-
-});
 
 // Array para almacenar el HTML del cuestionario
 let formArray = [];
@@ -346,27 +392,27 @@ let formArray = [];
 // Array para almacenar las respuestas
 let responsesArray = [];
 
-// Función para capturar el HTML del formulario
+
 function getFormHTML() {
     const surveyForm = document.getElementById('survey-form');
     return surveyForm ? surveyForm.outerHTML : '';
 }
 
-// Función para guardar el HTML en el array
+
 function saveFormToArray() {
     const formHTML = getFormHTML();
     if (formHTML) {
         formArray.push(formHTML);
-        // console.log('Formulario guardado en el array:', formHTML);
+         console.log('Formulario guardado en el array:', formHTML);
     }
 }
 
-// Función para mostrar el cuestionario en el modal
+
 
 function showSurveyInModal() {
     const modalFormContainer = document.getElementById('survey-form-response');
     if (formArray.length > 0) {
-        // Muestra el último cuestionario guardado
+      
         modalFormContainer.innerHTML = formArray[formArray.length - 1];
     } else {
         modalFormContainer.innerHTML = '<p>No hay encuestas disponibles para responder.</p>';
@@ -477,3 +523,14 @@ function configureDynamicForm(session) {
     }
 }
 
+
+const aggSur = document.getElementById("AggSurvey")
+const butonAggSurvey = document.getElementById("create-survey-btn")
+
+butonAggSurvey.addEventListener("click",()=>{
+
+    aggSur.classList.remove("d-none")
+    console.log("sds");
+   
+
+})

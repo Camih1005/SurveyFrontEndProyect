@@ -29,7 +29,7 @@
 
 
 export async function postSurvey(surveys,idca) {
-    const createSurveyUrl = `https://radiant-growth-production.up.railway.app/api/survey/category/${idca.id}`;
+    const createSurveyUrl = `https://radiant-growth-production.up.railway.app/api/survey/${idca.id}`;
     
     try {
         const response = await fetch(createSurveyUrl, {
@@ -65,7 +65,7 @@ export async function postSurvey(surveys,idca) {
 
 export async function DeleteSurvey(idSurvey) {
     const url = `https://radiant-growth-production.up.railway.app/api/survey/${idSurvey}`;
-    try {
+   
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
@@ -73,22 +73,7 @@ export async function DeleteSurvey(idSurvey) {
             }
         });
 
-        if (!response.ok) {
-            // Lee la respuesta de error si existe
-            const text = await response.text();
-            console.error(`Error: ${response.status} - ${text}`);
-            throw new Error(`Network response was not ok: ${response.statusText} - ${text}`);
-        }
-
-        // Procesa la respuesta JSON
-        const data = await response.json();
-        console.log(data);
-        return data; 
-    } catch (error) {
-        // Captura y muestra cualquier error en la solicitud
-        console.error('Error al ELiminar encuesta:', error);
-        throw error;
-    }
+    
 }
 
 

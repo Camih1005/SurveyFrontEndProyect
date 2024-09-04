@@ -36,9 +36,9 @@ function eventoEliminarSurvey(){
             let idContenedor = divPadre.getAttribute("id");
             let surveyId = idContenedor.split("-")[1];
             let encuestaEliminada = await DeleteSurvey(surveyId);
-            ImprimirSurveys();
+            const parent = divPadre.parentElement;
+            parent.removeChild(divPadre);
 
-            
         })
     })
 }
