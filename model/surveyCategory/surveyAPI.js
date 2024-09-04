@@ -65,7 +65,7 @@ export async function postSurvey(surveys,idca) {
 
 export async function DeleteSurvey(idSurvey) {
     const url = `https://radiant-growth-production.up.railway.app/api/survey/${idSurvey}`;
-    
+    try {
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
@@ -84,6 +84,11 @@ export async function DeleteSurvey(idSurvey) {
         const data = await response.json();
         console.log(data);
         return data; 
+    } catch (error) {
+        // Captura y muestra cualquier error en la solicitud
+        console.error('Error al ELiminar encuesta:', error);
+        throw error;
+    }
 }
 
 
