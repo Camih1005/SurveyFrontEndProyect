@@ -87,8 +87,6 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
         confirmSaveButton.addEventListener('click', () => {
             // Guarda el cuestionario
             console.log('Formulario guardado:', surveyData);
-
-
             // Limpia el formulario
             dynamicForm.textContent = "";
             document.querySelectorAll('.dynamic-form-container').forEach(container => container.innerHTML = '');
