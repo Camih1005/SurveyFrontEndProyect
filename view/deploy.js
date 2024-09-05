@@ -1,7 +1,8 @@
-import { initialize } from '../controller/categoryController.js';
+import { initialize,DeleteCategory } from '../controller/categoryController.js';
 import { postSurvey,getSurveysByCatId} from '../model/surveyCategory/surveyAPI.js';
 import { createChapter} from "../model/surveyCategory/chapterAPI.js";
 import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
+
 
 
     const surveyTypeSelect = document.getElementById('survey-type');
@@ -16,6 +17,20 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
     }
 
     let surveyData = null; 
+    DeleteCategory();
+
+
+        const button = document.getElementById("eliminar-category-btn");
+        button.addEventListener("click", (e) => {
+    
+            const inputName = document.getElementById("categorynameDelete");
+            console.log(inputName.value);
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+
+    
 
     if (saveButton) {
         saveButton.addEventListener('click', () => {
@@ -297,6 +312,7 @@ function enviarSurvey() {
 
 // Initialize categories
 initialize();
+
 
 // Selección de elementos del DOM
 const selectElement = document.getElementById('floatingSelect');

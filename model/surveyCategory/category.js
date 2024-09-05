@@ -44,7 +44,7 @@ export async function createCategory(newCategory) {
     return s.id;
 }
 
-export async function DeleteCategory(nameCategory) {
+export async function DeleteCategoryByName(nameCategory) {
     const url = `https://radiant-growth-production.up.railway.app/api/SurveyCategory/${nameCategory}`;
    
         const response = await fetch(url, {
