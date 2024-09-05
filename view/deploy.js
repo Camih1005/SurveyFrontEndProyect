@@ -340,7 +340,7 @@ selectElement.addEventListener('change', async function(event) {
         
         // Actualizar idca con el nuevo ID
         idca.id = categoryId ? categoryId.replace('idcat-', '') : '';
-
+        console.log(idca.id)
         // Buscar encuestas por ID y mostrar
         const BuscarSurveyByCatid = await getSurveysByCatId(idca.id);
         ImprimirSurveys(BuscarSurveyByCatid);
