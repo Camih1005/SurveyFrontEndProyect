@@ -107,14 +107,43 @@ select {
 /* From Uiverse.io by kennyotsu-monochromia */ 
 
 
-.ShowSurveys{
+/* Estilo para el contenedor de desplazamiento */
+.ShowSurveys {
     display: flex;
     justify-content: flex-start;
     gap: 20px;
-    flex-wrap: wrap;
     align-items: center;
     padding: 10px;
+    overflow-x: auto; /* Permite el desplazamiento horizontal */
+    background-color: rgba(250, 220, 220, 0.062);
+    height: auto;
 }
+
+/* Estilo para la barra de desplazamiento en WebKit (Chrome, Safari) */
+.ShowSurveys::-webkit-scrollbar {
+    height: 10px; /* Altura de la barra de desplazamiento */
+}
+
+.ShowSurveys::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Color del fondo del track de la barra */
+    border-radius: 10px; /* Bordes redondeados del track */
+}
+
+.ShowSurveys::-webkit-scrollbar-thumb {
+    background: #888; /* Color del pulgar de la barra de desplazamiento */
+    border-radius: 10px; /* Bordes redondeados del pulgar */
+}
+
+.ShowSurveys::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color del pulgar al pasar el ratón */
+}
+
+/* Estilo para la barra de desplazamiento en Firefox */
+.ShowSurveys {
+    scrollbar-width: thin; /* Tamaño del scrollbar */
+    scrollbar-color: #888 rgba(0, 0, 0, 0.1); /* Color del pulgar y del track en Firefox */
+}
+
 
 .surveyContainer{
     position: relative;
@@ -124,6 +153,14 @@ select {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    width: 20%;
+    height: auto;
+    transition: 0.5s all;
+   
+}
+.surveyContainer:hover{
+ transform: scaleX(1.05);
+ transition: 0.5s all;
 }
 
 .surveycontainerimg{

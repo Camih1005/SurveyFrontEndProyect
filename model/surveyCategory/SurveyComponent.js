@@ -1,30 +1,33 @@
 import {DeleteSurvey} from "./surveyAPI.js";
 
-export async function ImprimirSurveys(surveyList){
+export async function ImprimirSurveys(surveyList) {
     const showSurveys = document.querySelector(".ShowSurveys");
     showSurveys.innerHTML = "";
 
-    if(surveyList.length === 0){
+    if (surveyList.length === 0) {
         alert("No hay encuestas asignadas a esta Categoria");
+        return; // Salir si no hay encuestas
     }
 
-    for(let i=0;i<surveyList.length;i++){
-        const divcontainer = document.createElement("div")
-        divcontainer.setAttribute("class","surveyContainer");
-        divcontainer.setAttribute("id",`survey-${surveyList[i].id}`)
-    
-        divcontainer.innerHTML = `
-                        <div class="eliminarSurvey">X</div>
-                        <img class="surveycontainerimg" src="../assets/surveyimg.png" alt="imagen encuesta">
-                        <h1>${surveyList[i].name}</h1>
-                        <p>${surveyList[i].description}</p>
-        `
-        showSurveys.appendChild(divcontainer);
+    for (let i = 0; i < surveyList.length; i++) {
+        const divContainer = document.createElement("div");
+        divContainer.setAttribute("class", "surveyContainer animate__animated animate__flipInX");
+        divContainer.setAttribute("id", `survey-${surveyList[i].id}`);
+
+        divContainer.innerHTML = `
+            <div class="eliminarSurvey">X</div>
+            <img class="surveyContainerImg" src="../assets/surveyimg.png" alt="imagen encuesta">
+            <h2 style = "font-size:1.5rem">${[i+1]}. ${surveyList[i].name}</h2>
+            <p>${surveyList[i].description}</p>
+        `;
+
+        showSurveys.appendChild(divContainer);
     }
 
+    // Asegúrate de que la función eventoEliminarSurvey esté definida en otro lugar
     eventoEliminarSurvey();
-
 }
+
 
 
 function eventoEliminarSurvey(){
