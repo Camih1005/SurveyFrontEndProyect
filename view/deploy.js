@@ -1,7 +1,8 @@
-import { initialize } from '../controller/categoryController.js';
+import { initialize,DeleteCategory } from '../controller/categoryController.js';
 import { postSurvey,getSurveysByCatId} from '../model/surveyCategory/surveyAPI.js';
 import { createChapter} from "../model/surveyCategory/chapterAPI.js";
 import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
+import {getQuestion} from "../model/surveyCategory/question.js"
 
 
     const surveyTypeSelect = document.getElementById('survey-type');
@@ -16,92 +17,111 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
     }
 
     let surveyData = null; 
+    DeleteCategory();
 
-    if (saveButton) {
-        saveButton.addEventListener('click', () => {
-            const type = surveyTypeSelect.value;
-            console.log(type)
 
-            if (!type) {
-                alert('Por favor, selecciona un tipo de encuesta.');
-                return;
-            }
+    const button = document.getElementById("eliminar-category-btn");
+    button.addEventListener("click", (e) => {
 
-            let isValid = true;
+        const inputName = document.getElementById("categorynameDelete");
+        console.log(inputName.value);
+        e.stopPropagation();
+        e.preventDefault();
+    });
 
-            if (type === 'multiple-choice') {
-                const questions = [];
-                document.querySelectorAll('.dynamic-question').forEach((questionDiv, index) => {
-                    const questionText = questionDiv.querySelector(`#question${index + 1}`)?.value.trim();
-                    if (!questionText) {
-                        alert(`Por favor, ingresa una pregunta para la pregunta ${index + 1}.`);
-                        isValid = false;
-                        return;
-                    }
 
-                    const options = [];
-                    questionDiv.querySelectorAll(`#options-container${index + 1} input`).forEach(input => {
-                        const value = input.value.trim();
-                        if (value) options.push(value);
+    function handleSave() {
+        if (saveButton) {
+            saveButton.addEventListener('click', () => {
+                const type = document.querySelector('.survey-type')?.value; // Asegúrate de seleccionar correctamente el elemento
+                console.log(type);
+    
+                if (!type) {
+                    alert('Por favor, selecciona un tipo de encuesta.');
+                    return;
+                }
+    
+                let isValid = true;
+                let surveyData = {};
+    
+                if (type === 'multiple-choice') {
+                    const questions = [];
+                    document.querySelectorAll('.dynamic-question').forEach((questionDiv, index) => {
+                        const questionText = questionDiv.querySelector(`#question${index + 1}`)?.value.trim();
+                        if (!questionText) {
+                            alert(`Por favor, ingresa una pregunta para la pregunta ${index + 1}.`);
+                            isValid = false;
+                            return;
+                        }
+    
+                        const options = [];
+                        questionDiv.querySelectorAll(`#options-container${index + 1} input`).forEach(input => {
+                            const value = input.value.trim();
+                            if (value) options.push(value);
+                        });
+                        if (options.length === 0) {
+                            alert(`Por favor, añade al menos una opción para la pregunta ${index + 1}.`);
+                            isValid = false;
+                            return;
+                        }
+    
+                        questions.push({ question: questionText, options: options });
                     });
-                    if (options.length === 0) {
-                        alert(`Por favor, añade al menos una opción para la pregunta ${index + 1}.`);
+    
+                    if (questions.length === 0) {
+                        alert('Por favor, añade al menos una pregunta.');
                         isValid = false;
+                    }
+    
+                    if (!isValid) return;
+                    surveyData = { type: type, questions: questions, responses: [] };
+    
+                } else if (type === 'short-answer') {
+                    const question = document.getElementById('question')?.value.trim();
+                    if (!question) {
+                        alert('Por favor, ingresa una pregunta.');
                         return;
                     }
-
-                    questions.push({ question: questionText, options: options });
-                });
-
-                if (questions.length === 0) {
-                    alert('Por favor, añade al menos una pregunta.');
-                    isValid = false;
+                    surveyData = { type: type, questions: [{ question: question }], responses: [] };
+    
+                } else if (type === 'rating') {
+                    const scale = document.getElementById('scale')?.value.trim();
+                    if (!scale) {
+                        alert('Por favor, ingresa una escala.');
+                        return;
+                    }
+                    surveyData = { type: type, questions: [{ scale: scale }], responses: [] };
                 }
-
-                if (!isValid) return;
-                surveyData = { type: type, questions: questions, responses: [] };
-
-            } else if (type === 'short-answer') {
-                const question = document.getElementById('question')?.value.trim();
-                if (!question) {
-                    alert('Por favor, ingresa una pregunta.');
-                    return;
-                }
-                surveyData = { type: type, questions: [{ question: question }], responses: [] };
-
-            } else if (type === 'rating') {
-                const scale = document.getElementById('scale')?.value.trim();
-                if (!scale) {
-                    alert('Por favor, ingresa una escala.');
-                    return;
-                }
-                surveyData = { type: type, questions: [{ scale: scale }], responses: [] };
-            }
-
-            // Muestra el modal de confirmación
-            confirmationModal.show();
-        });
+    
+                // Muestra el modal de confirmación
+                confirmationModal.show();
+            });
+        }
+    
+        if (confirmSaveButton) {
+            confirmSaveButton.addEventListener('click', () => {
+                // Guarda el cuestionario
+                console.log('Formulario guardado:', surveyData);
+    
+                // Limpia el formulario
+                dynamicForm.textContent = "";
+                document.querySelectorAll('.dynamic-form-container').forEach(container => container.innerHTML = '');
+                surveyData = null; // Limpia los datos del cuestionario
+                let name = document.getElementById('surveyName');
+                let description = document.getElementById('surveyDesc');
+    
+                name.value = "";
+                description.value = "";
+    
+                // Oculta el modal
+                confirmationModal.hide();
+            });
+        }
     }
+    
 
-    if (confirmSaveButton) {
-        confirmSaveButton.addEventListener('click', () => {
-            // Guarda el cuestionario
-            console.log('Formulario guardado:', surveyData);
-
-
-            // Limpia el formulario
-            dynamicForm.textContent = "";
-            document.querySelectorAll('.dynamic-form-container').forEach(container => container.innerHTML = '');
-            surveyData = null; // Limpia los datos del cuestionario
-            let name = document.getElementById('surveyName');
-            let description = document.getElementById('surveyDesc');
-
-            name.value = ""
-            description.value = ""
-            // Oculta el modal
-            confirmationModal.hide();
-        });
-    }
+    handleSave();
+    
 
     function setupSurveyTypeEvents() {
         document.querySelectorAll('.survey-type').forEach(select => {
@@ -110,7 +130,7 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
                 const sessionForm = event.target.closest('.session-form');
                 const dynamicFormContainer = sessionForm.querySelector('.dynamic-form-container');
                 dynamicFormContainer.innerHTML = '';
-
+    
                 if (type === 'multiple-choice') {
                     dynamicFormContainer.innerHTML = `
                         <div id="questions-container"></div>
@@ -126,20 +146,20 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
                                 <input type="text" class="form-control" id="question${questionIndex}" placeholder="Pregunta ${questionIndex}" required>
                                 <label for="question${questionIndex}">Pregunta ${questionIndex}:</label>
                             </div>
-                            <div id="options-container${questionIndex}"></div>
+                            <div id="options-container${questionIndex}" class="options-container"></div>
                             <button type="button" class="btn btn-secondary mb-3 add-option" id="add-option${questionIndex}">Añadir opción</button>
                         `;
                         questionsContainer.appendChild(newQuestion);
-
+    
                         document.getElementById(`add-option${questionIndex}`).addEventListener('click', () => {
                             const optionsContainer = document.getElementById(`options-container${questionIndex}`);
                             const optionIndex = optionsContainer.children.length + 1;
                             const newOption = document.createElement('div');
                             newOption.className = 'dynamic-option';
                             newOption.innerHTML = `
-                                <div class="form-floating mb-2">
-                                    <input type="text" class="form-control" id="option${questionIndex}_${optionIndex}" placeholder="Opción ${optionIndex}" required>
-                                    <label for="option${questionIndex}_${optionIndex}">Opción ${optionIndex}:</label>
+                                <div class="form-check mb-2">
+                                    <input type="radio" name="question${questionIndex}" id="option${questionIndex}_${optionIndex}" value="option${optionIndex}" class="form-check-input">
+                                    <input type="text" class="form-control ms-2" id="option${questionIndex}_${optionIndex}_text" placeholder="Texto de opción ${optionIndex}" required>
                                 </div>
                             `;
                             optionsContainer.appendChild(newOption);
@@ -163,12 +183,12 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
             });
         });
     }
-
+    
     const sessionsArray = [];
-
+    
     function addContent() {
         const sessionCount = document.querySelectorAll('.session-form').length + 1;
-
+    
         const newDiv = document.createElement('div');
         newDiv.className = 'session-form';
         newDiv.dataset.sessionId = sessionCount;
@@ -192,11 +212,11 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
                 <div class="dynamic-form-container" id="dynamic-form-container${sessionCount}"></div>
             </div>
         `;
-
+    
         dynamicForm.appendChild(newDiv);
         setupSurveyTypeEvents();
     }
-
+    
     function saveSessions() {
         const sessionForms = document.querySelectorAll('.session-form');
         sessionForms.forEach(form => {
@@ -208,7 +228,7 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
                     const questionText = questionDiv.querySelector(`#question${index + 1}`)?.value.trim();
                     if (!questionText) return;
                     const options = [];
-                    questionDiv.querySelectorAll(`#options-container${index + 1} input`).forEach(input => {
+                    questionDiv.querySelectorAll(`#options-container${index + 1} input[type="text"]`).forEach(input => {
                         const value = input.value.trim();
                         if (value) options.push(value);
                     });
@@ -229,25 +249,25 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
             }
             if (questions.length > 0) {
                 sessionsArray.push({ name: form.querySelector(`#chaptersesion${sessionId}`).value, type: type, questions: questions });
+                console.log("questions = ", questions);
             }
         });
-
+    
         console.log('Sesiones guardadas:', sessionsArray);
         // Aquí puedes agregar la lógica para enviar `sessionsArray` al servidor
     }
-
+    
     if (btAggSesion) {
         btAggSesion.addEventListener('click', addContent);
     }
-
+    
     if (saveButton) {
         saveButton.addEventListener('click', () => {
             saveSessions();
             confirmationModal.show();
         });
     }
-
-
+    
 
 
 // Existing event listeners
@@ -267,6 +287,8 @@ function enviarSurvey() {
     const description = document.getElementById('surveyDesc').value;
     return { name: name, description: description };
 }
+
+
 
 // document.getElementById('save-form').addEventListener('click', async () => {
 //     const surveyData = enviarSurvey();
@@ -326,6 +348,12 @@ selectElement.addEventListener('change', async function(event) {
 });
 
 
+const chapterid = ""
+
+
+
+console.log(chapterid,"jajajaja")
+
 document.getElementById('save-form').addEventListener('click', async () => {
     const surveyData = enviarSurvey();
     const chapterData = enviarChapter();
@@ -344,6 +372,7 @@ document.getElementById('save-form').addEventListener('click', async () => {
 
         // Asegúrate de que idca esté actualizado antes de llamar a postSurvey
         console.log('ID de categoría para la encuesta:', idca.id);
+        console.log()
 
         const surveyResult = await postSurvey(surveyData, idca);
         console.log('Encuesta enviada con éxito, ID:', surveyResult);
@@ -351,8 +380,11 @@ document.getElementById('save-form').addEventListener('click', async () => {
         // Añade el ID de la encuesta a chapterData
         chapterData.surveyId = surveyResult;
 
-        const chapterResult = await createChapter(chapterData);
+        const chapterResult = await createChapter(surveyResult,chapterData);
+        // chapterid = chapterResult.id
         console.log('Capítulo creado:', chapterResult);
+        getQuestion(chapterResult.id)
+        // getQuestion(chapterid)
     } catch (error) {
         console.error('Error al enviar la encuesta o capítulo:', error);
     }
@@ -392,32 +424,104 @@ let formArray = [];
 // Array para almacenar las respuestas
 let responsesArray = [];
 
-
 function getFormHTML() {
-    const surveyForm = document.getElementById('survey-form');
+    const surveyForm = document.getElementById('shotSurvey-HTML');
     return surveyForm ? surveyForm.outerHTML : '';
 }
+function modifyFormHTML(htmlString) {
+    // Crear un elemento DOM temporal para manipular el HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
 
+    // Eliminar los botones "Añadir opción", "Añadir pregunta" y "Agregar sesión"
+    const addOptionButtons = tempDiv.querySelectorAll('.add-option');
+    addOptionButtons.forEach(button => button.remove());
 
-function saveFormToArray() {
-    const formHTML = getFormHTML();
-    if (formHTML) {
-        formArray.push(formHTML);
-         console.log('Formulario guardado en el array:', formHTML);
+    const addQuestionButton = tempDiv.querySelector('.add-question');
+    if (addQuestionButton) {
+        addQuestionButton.remove();
     }
+
+    const aggSesionButton = tempDiv.querySelector('#btAggSesion');
+    if (aggSesionButton) {
+        aggSesionButton.remove();
+    }
+
+    // Reemplazar los inputs con texto
+    const nameDiv = tempDiv.querySelector('#surveyName');
+    const descDiv = tempDiv.querySelector('#surveyDesc');
+    const questionDiv = tempDiv.querySelector('#question');
+    const sessionNameDiv = tempDiv.querySelector('#chaptersesion1');
+    let surveyText = enviarSurvey()
+    
+    if (nameDiv) {
+        const nameText = document.createElement('p');
+        nameText.textContent = surveyText.name;
+        nameDiv.parentNode.replaceChild(nameText, nameDiv);
+    }
+    
+    if (descDiv) {
+        const descText = document.createElement('p');
+        descText.textContent = surveyText.description;
+        descDiv.parentNode.replaceChild(descText, descDiv);
+    }
+
+    if (questionDiv) {
+        const questionText = document.createElement('p');
+        questionText.textContent = "Texto para Pregunta";
+        questionDiv.parentNode.replaceChild(questionText, questionDiv);
+    }
+
+    if (sessionNameDiv) {
+        const sessionNameText = document.createElement('p');
+        sessionNameText.textContent = "Texto para Nombre de la Sesión";
+        sessionNameDiv.parentNode.replaceChild(sessionNameText, sessionNameDiv);
+    }
+
+    // Eliminar los botones "Guardar Formulario" y "Responder Encuesta"
+    const saveFormButton = tempDiv.querySelector('#save-form');
+    if (saveFormButton) {
+        saveFormButton.remove();
+    }
+
+    const openModalButton = tempDiv.querySelector('#open-modal');
+    if (openModalButton) {
+        openModalButton.remove();
+    }
+
+    // Convertir de nuevo el contenido modificado a un string HTML
+    return tempDiv.innerHTML;
 }
 
+function saveModifiedFormToArray() {
+    let formHTML = getFormHTML();
+    
+    // Modificar el HTML para eliminar elementos no deseados
+    formHTML = modifyFormHTML(formHTML);
+    
+    // Guardar el HTML modificado en el array
+    formArray.push(formHTML);
+    console.log('Formulario modificado y guardado en el array:', formHTML);
+}
 
+function createFormObject() {
+    const formObject = {
+        html: formArray,  // El HTML almacenado en el array
+        timestamp: new Date().toISOString(),  // Por ejemplo, una marca de tiempo
+        // Agrega otros datos si es necesario
+    };
+    return formObject;
+}
 
 function showSurveyInModal() {
     const modalFormContainer = document.getElementById('survey-form-response');
     if (formArray.length > 0) {
-      
         modalFormContainer.innerHTML = formArray[formArray.length - 1];
     } else {
         modalFormContainer.innerHTML = '<p>No hay encuestas disponibles para responder.</p>';
     }
 }
+
 
 // Función para obtener las respuestas del formulario
 function getFormResponses() {
@@ -435,7 +539,7 @@ function getFormResponses() {
 
 // Evento para guardar el formulario cuando se haga clic en el botón de guardar
 document.getElementById('save-form').addEventListener('click', function () {
-    saveFormToArray();
+    saveModifiedFormToArray();
 });
 
 // Evento para mostrar el cuestionario en el modal cuando se haga clic en "Responder Encuesta"

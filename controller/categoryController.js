@@ -1,5 +1,5 @@
 // controller/categoryController.js
-import { getCategories, createCategory } from '../model/surveyCategory/category.js';
+import { getCategories, createCategory,DeleteCategoryByName} from '../model/surveyCategory/category.js';
 import { renderCategories, getFormData } from '../view/categoryView.js';
 
 export async function initialize() {
@@ -31,4 +31,23 @@ export async function initialize() {
             console.error('Error creating category:', error);
         }
     });
+}
+
+
+export function DeleteCategory(){
+    const formDeleteCategory = document.getElementById("form13");
+    formDeleteCategory.addEventListener("submit",async (e)=>{
+        const CategoryName = document.getElementById('categorynameDelete').value;
+        if(!CategoryName == ""){
+            const lowerCasecat = CategoryName.toLowerCase();
+            console.log(lowerCasecat);
+            const Eliminar = await DeleteCategoryByName(lowerCasecat);
+        }
+        else{
+            alert("el campo no puede ser vacio")
+        }
+        e.preventDefault();
+        e.stopPropagation();
+
+    })
 }
