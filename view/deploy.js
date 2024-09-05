@@ -21,14 +21,7 @@ import {getQuestion} from "../model/surveyCategory/question.js"
     DeleteCategory();
 
 
-    const button = document.getElementById("eliminar-category-btn");
-    button.addEventListener("click", (e) => {
-
-        const inputName = document.getElementById("categorynameDelete");
-        console.log(inputName.value);
-        e.stopPropagation();
-        e.preventDefault();
-    });
+       
 
 
     function handleSave() {
@@ -290,15 +283,7 @@ import {getQuestion} from "../model/surveyCategory/question.js"
 
 // Existing event listeners
 // Funciones para manejar los datos del formulario
-function enviarChapter() {
-    const title = document.getElementById('chaptersesion1').value;
 
-    // Genera un número aleatorio entre 1 y 1000 (ajustado correctamente)
-    const randomChapterNumber = Math.floor(Math.random() * 1000) + 1;
-    console.log(randomChapterNumber);
-
-    return { chapter_title: title, chapter_number: randomChapterNumber };
-}
 
 function enviarSurvey() {
     const name = document.getElementById('surveyName').value;
@@ -366,46 +351,65 @@ selectElement.addEventListener('change', async function(event) {
     }
 });
 
-
-const chapterid = ""
-
-
-
-console.log(chapterid,"jajajaja")
-
 document.getElementById('save-form').addEventListener('click', async () => {
     const surveyData = enviarSurvey();
-    const chapterData = enviarChapter();
-
-    try {
-        // Verifica que los campos no estén vacíos
-        if (chapterData.chapter_title.trim() === "") {
-            alert("Tienes que insertar el capítulo");
+    let idEncuesta = await guardarDatosEncuesta(surveyData);
+        if(idEncuesta===false){
             return;
         }
 
-        if (surveyData.name.trim() === "" || surveyData.description.trim() === "") {
-            alert("Tienes que completar todos los campos de la encuesta");
+    const divCapitulo = document.querySelectorAll(".session-form");
+
+    divCapitulo.forEach(async (e)=>{
+        const CapNumber = e.getAttribute("data-session-id");
+        let titleCapitulo = "";
+        const childElements = e.querySelectorAll("*");
+        childElements.forEach((child)=>{
+            if(child.tagName==="INPUT" && child.id.includes(`chaptersesion${CapNumber}`)){
+                titleCapitulo = child.value;
+            }
+        })
+
+        let chapter = {chapterNumber: CapNumber,chapterTitle: titleCapitulo}
+
+        let responseCapitulo = await GuardarDatosCapitulo(chapter,idEncuesta);
+        if(responseCapitulo===false){
             return;
+        } 
+    })
+
+    async function guardarDatosEncuesta(surveyData){
+        try {
+            if (surveyData.name.trim() === "" || surveyData.description.trim() === "") {
+                alert("Tienes que completar todos los campos de la encuesta");
+                return false;
+            }
+            // Asegúrate de que idca esté actualizado antes de llamar a postSurvey
+            console.log('ID de categoría para la encuesta:', idca.id);
+    
+            const surveyResult = await postSurvey(surveyData, idca);
+            console.log('Encuesta enviada con éxito, ID:', surveyResult);
+              // Añade el ID de la encuesta a chapterData
+            return surveyResult;
+            
+        } catch (error) {
+            console.log("Error al enviar la encuesta: ", error);
         }
+      
+    }
 
-        // Asegúrate de que idca esté actualizado antes de llamar a postSurvey
-        console.log('ID de categoría para la encuesta:', idca.id);
-        console.log()
-
-        const surveyResult = await postSurvey(surveyData, idca);
-        console.log('Encuesta enviada con éxito, ID:', surveyResult);
-
-        // Añade el ID de la encuesta a chapterData
-        chapterData.surveyId = surveyResult;
-
-        const chapterResult = await createChapter(surveyResult,chapterData);
-        // chapterid = chapterResult.id
-        console.log('Capítulo creado:', chapterResult);
-        getQuestion(chapterResult.id)
-        // getQuestion(chapterid)
-    } catch (error) {
-        console.error('Error al enviar la encuesta o capítulo:', error);
+    async function GuardarDatosCapitulo(chapterData, idEncuesta){
+        try {
+            if (chapterData.chapterTitle.trim() === "") {
+                alert("Tienes que insertar el capítulo");
+                return false;
+            }
+            const chapterResult = await createChapter(chapterData,idEncuesta);
+            console.log('Capítulo creado:', chapterResult);
+        } catch (error) {
+            console.log("Error al guardarelcapitulo",error);
+        }
+      
     }
 });
 

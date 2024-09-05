@@ -42,6 +42,9 @@ export function DeleteCategory(){
             const lowerCasecat = CategoryName.toLowerCase();
             console.log(lowerCasecat);
             const Eliminar = await DeleteCategoryByName(lowerCasecat);
+            if(Eliminar===true){
+                alert("categoria eliminada correctamente");
+            }
         }
         else{
             alert("el campo no puede ser vacio")

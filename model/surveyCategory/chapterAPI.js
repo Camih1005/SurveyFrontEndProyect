@@ -1,8 +1,8 @@
 // Función para enviar datos del capítulo
-export async function createChapter(survey,chapter) {
+export async function createChapter(chapter, idEncuesta) {
     try {
         // Cambia la URL para incluir el ID de la encuesta si es necesario
-        const URL = `https://radiant-growth-production.up.railway.app/api/chapter/${survey}`;
+        const URL = `https://radiant-growth-production.up.railway.app/api/chapter/${idEncuesta}`;
         
         // Muestra los datos enviados para depuración
         console.log('Datos enviados al servidor para crear capítulo:', chapter);
