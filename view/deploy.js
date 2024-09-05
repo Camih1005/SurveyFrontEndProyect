@@ -5,6 +5,7 @@ import {ImprimirSurveys} from "../model/surveyCategory/SurveyComponent.js"
 import {getQuestion} from "../model/surveyCategory/question.js"
 
 
+
     const surveyTypeSelect = document.getElementById('survey-type');
     const dynamicForm = document.getElementById('dynamic-form');
     const saveButton = document.getElementById('save-form');
@@ -120,8 +121,25 @@ import {getQuestion} from "../model/surveyCategory/question.js"
     }
     
 
-    handleSave();
-    
+
+    if (confirmSaveButton) {
+        confirmSaveButton.addEventListener('click', () => {
+            // Guarda el cuestionario
+            console.log('Formulario guardado:', surveyData);
+            // Limpia el formulario
+            dynamicForm.textContent = "";
+            document.querySelectorAll('.dynamic-form-container').forEach(container => container.innerHTML = '');
+            surveyData = null; // Limpia los datos del cuestionario
+            let name = document.getElementById('surveyName');
+            let description = document.getElementById('surveyDesc');
+
+            name.value = ""
+            description.value = ""
+            // Oculta el modal
+            confirmationModal.hide();
+        });
+    }
+    handleSave() 
 
     function setupSurveyTypeEvents() {
         document.querySelectorAll('.survey-type').forEach(select => {
@@ -321,6 +339,7 @@ function enviarSurvey() {
 
 // Initialize categories
 initialize();
+
 
 // Selección de elementos del DOM
 const selectElement = document.getElementById('floatingSelect');
