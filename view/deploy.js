@@ -357,32 +357,34 @@ document.getElementById('save-form').addEventListener('click', async () => {
             return;
         }
 
-        QuestionRec(responseCapitulo);
+        await QuestionRec(responseCapitulo);
 
     })
 
 
 
 
-    function QuestionRec(chapterid) {
+    async function QuestionRec(chapterid) {
         const result = []; // Usamos un array para almacenar los resultados de cada sesión
     
         for (let i = 0; i < sessionsArray.length; i++) {
-            const nameSession = sessionsArray[i].name;
             const typeq = sessionsArray[i].type;
-            const questions = sessionsArray[i].questions[0].scale;
-    
-            // Creamos un objeto para la sesión actual
-            const sessionData = {
-                questionNumber: i + 1,
-                responseType: typeq,
-                commentQuestion: "",
-                questionText : questions
-            };
-    
-            result.push(sessionData); // Agregamos el objeto al array de resultados
-            postQuestion(sessionData,chapterid);
+            // const questions = sessionsArray[i].questions[0].question;
+
+            const question = sessionsArray[i].questions[0].question;
+
+                    // Creamos un objeto para la sesión actual
+                let sessionData = {
+                    questionNumber: j + 1,
+                    responseType: typeq,
+                    commentQuestion: "no comments",
+                    questionText : question
+                };
+                  
+                result.push(sessionData); // Agregamos el objeto al array de resultados
+                await postQuestion(sessionData,chapterid);
             
+
         }
     
         return result; // Devolvemos el array con todos los objetos de sesión
