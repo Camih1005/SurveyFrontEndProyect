@@ -17,11 +17,11 @@ export async function getQuestion(chapterId) {
 }
 
 
-export async function postSurvey(question,chapterId) {
-    const createSurveyUrl = `https://radiant-growth-production.up.railway.app/api/question/${chapterId}`;
+export async function postQuestion(question,chapterId) {
+    const crearQuestion = `https://radiant-growth-production.up.railway.app/api/question/${chapterId}`;
     
     try {
-        const response = await fetch(createSurveyUrl, {
+        const response = await fetch(crearQuestion, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -47,7 +47,7 @@ export async function postSurvey(question,chapterId) {
 
     } catch (error) {
         // Captura y muestra cualquier error en la solicitud
-        console.error('Error al crear encuesta:', error);
+        console.error('Error al crear question:', error);
         throw error;
     }
 }
